@@ -11,9 +11,9 @@ Lớp: L3A · Bàn / zone: ____ · Track: ____
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-| Vũ Quang Thái | 2A202603545 |  |
-| Nguyễn Thị Thuỳ Dung | 2A202603552 |  |
-| Ngô Văn Tuân | 2A202603630 |  |
+| Vũ Quang Thái | 2A202603545 | S2, S5 & prototype (main) |
+| Nguyễn Thị Thuỳ Dung | 2A202603552 | S3, S5 (sub), S6 |
+| Ngô Văn Tuân | 2A202603630 | S4, S5 (sub), S7 |
 
 ## §1. Lát cắt & phạm vi
 - Lát cắt (chép từ track):
