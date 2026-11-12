@@ -262,8 +262,17 @@ Với mỗi tool, nhóm đặt mức tự chủ theo chi phí sai lầm và kh�
 - **Phương án khác:** Cho AI thực hiện trước rồi cung cấp nút hoàn tác.
 - **Lý do loại:** Trong y tế, một số hậu quả như sử dụng thuốc sai hoặc trì hoãn cấp cứu không thể đảo ngược chỉ bằng thao tác hoàn tác. Vì vậy, ưu tiên chặn hành động nguy hiểm trước khi xảy ra.
 
-## §6. Tốt là gì  (chặng 6 — nhẹ, bỏ được nếu thiếu giờ)
-- 3 tiêu chí Pass/Fail chấm được; thiết kế của nhóm đạt tiêu chí nào trên 2 kịch bản đắt nhất; lỗi còn lại.
+## §6. Tốt là gì
+
+Nhóm chấm hai ca có chi phí sai lầm cao nhất ở §2 trên [prototype](prototype/index.html). Ca 4 (trẻ sốt cao, khó thở) tương ứng với kịch bản 1 trên giao diện. Ca 6 (khách muốn mua kháng sinh mạnh hơn khi chưa có đơn mới) tương ứng với kịch bản 2. Mỗi ô **Đạt** khi thỏa toàn bộ điều kiện của tiêu chí cho ca đó. Thiếu một điều kiện là **Trượt**.
+
+| Tiêu chí Pass/Fail | Ca 4 · Bỏ sót cấp cứu | Ca 6 · Tự ý bán thuốc kê đơn |
+|---|---|---|
+| 1. Có bước tiếp theo an toàn ngay trong phản hồi đầu tiên, trước khi dược sĩ tiếp nhận. | **Đạt.** Cảnh báo nêu dấu hiệu sốt cao, khó thở và có nút **Gọi 115** ngay trong khung chat. | **Đạt.** Phản hồi từ chối bán kháng sinh, giải thích lý do và có nút **Gặp dược sĩ**. |
+| 2. Chặn hành động gây hại ở cả trạng thái ban đầu và sau khi chuyển dược sĩ thất bại. | **Đạt.** Ở cả hai trạng thái, màn hình không gợi ý sản phẩm và nút **Gọi 115** vẫn dùng được. | **Đạt.** Ở cả hai trạng thái, khách không thấy thuốc kê đơn thay thế hoặc nút mua thuốc. |
+| 3. Trạng thái chuyển ca khớp với kết quả mô phỏng. Lần lượt chọn thành công rồi thất bại và kiểm tra thông báo sau mỗi lần. | **Đạt.** Khi gửi thành công, giao diện báo đã gửi tóm tắt cho dược sĩ. Khi mất kết nối, giao diện báo chưa chuyển được tín hiệu. | **Đạt.** Khi thành công, giao diện hiển thị dược sĩ tiếp nhận. Khi thất bại, giao diện ghi rõ yêu cầu chưa được tiếp nhận. |
+
+**Lỗi còn lại.** Phản hồi cho tin nhắn nhập tự do phụ thuộc vào kịch bản đang chọn. Có thể thử bằng cách mở kịch bản 2 rồi nhập “Bé sốt cao và khó thở”. Prototype vẫn đi theo luồng từ chối thuốc kê đơn và bỏ sót bước gọi 115, nên tiêu chí 1 trượt với ca nhập chéo này. Hai luồng dựng sẵn đạt cả ba tiêu chí trong mô phỏng. Trước khi phát hành cho khách hàng, cần xử lý được dấu hiệu nguy hiểm trong tin nhắn mới dù người dùng đang ở luồng nào.
 
 ## §7. Demo
 - Ca lạ nhận được ở demo: prototype đã làm gì, và nhóm có đổi ý gì sau ca đó không.
