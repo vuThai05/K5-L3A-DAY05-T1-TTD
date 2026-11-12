@@ -7,7 +7,7 @@
 
 # Bài nộp LAB5 — [Track] · Nhóm [tên]
 
-Lớp: L3A · Bàn / zone: ____ · Track: ____
+Lớp: L3A · Track: T1 · Nhóm: TTD
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
