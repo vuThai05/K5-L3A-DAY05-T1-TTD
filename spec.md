@@ -51,12 +51,104 @@ Tự ý bán thuốc kê đơn (Kịch bản 6)
 Lý do: AI vượt quá thẩm quyền khi bán thuốc kê đơn mà không có đơn hợp lệ và đánh giá chuyên môn. Người dùng có thể sử dụng thuốc không phù hợp, gây tác dụng phụ hoặc kháng kháng sinh. Khi thuốc đã được sử dụng, hậu quả sức khỏe không dễ đảo ngược.
 
 ## §3. Khi AI sai  (chặng 3)
-Với mỗi kịch bản đắt nhất:
-- AI nói gì (nguyên văn) · người dùng thấy gì · làm gì tiếp · ai được báo, sau bao lâu.
-- Quyết định: hỏi lại / trả lời kèm giới hạn / dừng và chuyển người — chọn cách nào, đã loại cách nào, vì sao.
-- Loại lỗi (hệ thống / người dùng / ngữ cảnh) và vì sao cách nói, cách sửa đi theo loại đó.
-- 2–3 nguyên tắc HAX/PAIR, mỗi cái trỏ vào một chỗ cụ thể (câu chữ hoặc chỗ trên màn hình).
-- Lỗi nào sửa câu chữ không cứu được (nếu có), và thiết kế cứu nó thế nào.
+
+### 3.1. Kịch bản 4 — Bỏ sót dấu hiệu cấp cứu
+
+**Tin nhắn người dùng:**
+
+> "Con mình sốt cao, thở khó, có thuốc gì uống không?"
+
+**Loại lỗi:** System Error — AI bỏ sót dấu hiệu nguy hiểm và ưu tiên `goi_y_san_pham` thay vì `khuyen_di_kham`.
+
+**AI nói (nguyên văn):**
+
+> ⚠️ **CẢNH BÁO KHẨN CẤP**
+>
+> Bé đang sốt cao và khó thở. Đây có thể là dấu hiệu nguy hiểm cần được cấp cứu ngay.
+>
+> Hãy gọi **115** hoặc đưa bé đến cơ sở cấp cứu gần nhất ngay lập tức. Không chờ tư vấn thuốc qua chat.
+>
+> Tôi không thể xác định nguyên nhân hoặc gợi ý thuốc an toàn trong tình huống này.
+
+| Yếu tố UX | Thiết kế |
+|---|---|
+| Người dùng thấy gì? | Cảnh báo khẩn cấp nổi bật, lý do cảnh báo là "sốt cao, khó thở"; không hiển thị gợi ý thuốc |
+| Làm gì tiếp? | Gọi 115 hoặc đến cơ sở cấp cứu ngay |
+| Ai được thông báo? | Người dùng ngay lập tức; có thể đồng thời thông báo dược sĩ |
+| Khi nào? | Ngay khi phát hiện dấu hiệu nguy hiểm, không cần chờ xác nhận |
+
+**Quyết định: Cảnh báo khẩn cấp ngay.**
+
+- **Chọn:** Tự động kích hoạt `khuyen_di_kham`, chặn `goi_y_san_pham`.
+- **Không chọn hỏi lại:** Có thể làm chậm thời gian cấp cứu.
+- **Không chọn chờ dược sĩ:** Thời gian chờ có thể gây hậu quả nghiêm trọng.
+- **Lý do:** Rủi ro trì hoãn cấp cứu cao hơn rủi ro cảnh báo thừa.
+
+### 3.2. Kịch bản 6 — Tự ý bán thuốc kê đơn
+
+**Tin nhắn người dùng:**
+
+> "Bán cho mình kháng sinh mạnh hơn, loại cũ uống không khỏi."
+
+**Loại lỗi:** System Error — AI thực hiện hành động vượt thẩm quyền. Yêu cầu của người dùng nằm ngoài phạm vi được phép của AI.
+
+**AI nói (nguyên văn):**
+
+> Tôi không thể tự bán thuốc kê đơn hoặc đề xuất thay thế kháng sinh khi chưa có đánh giá chuyên môn.
+>
+> Việc tự ý đổi thuốc có thể gây nguy hiểm cho sức khỏe.
+>
+> Bạn nên liên hệ bác sĩ kê đơn để được đánh giá lại. Tôi có thể chuyển cuộc trò chuyện đến dược sĩ để hỗ trợ thêm.
+
+| Yếu tố UX | Thiết kế |
+|---|---|
+| Người dùng thấy gì? | Thông báo "AI không được phép bán thuốc kê đơn", giải thích lý do và nút "Gặp dược sĩ" |
+| Làm gì tiếp? | Yêu cầu chuyển dược sĩ hoặc liên hệ bác sĩ kê đơn |
+| Ai được thông báo? | Dược sĩ trực khi người dùng yêu cầu chuyển |
+| Khi nào? | Ngay sau khi người dùng xác nhận chuyển dược sĩ |
+| Nếu không có dược sĩ? | Thông báo chưa thể kết nối, không tự bán hoặc đề xuất thuốc thay thế |
+
+**Quyết định: Từ chối hành động vượt thẩm quyền và hỗ trợ chuyển dược sĩ.**
+
+- **Chọn:** Chặn `ban_thuoc_ke_don`, cho phép `chuyen_duoc_si` khi người dùng yêu cầu.
+- **Không chọn tự bán:** Nguy cơ gây hại sức khỏe và vi phạm quy định về thuốc kê đơn.
+- **Không chọn chỉ hỏi thêm:** Dù bổ sung thông tin, AI vẫn không có thẩm quyền bán thuốc kê đơn.
+- **Lý do:** Hành động có mức thiệt hại không chấp nhận được và cần kiểm soát chuyên môn.
+
+### 3.3. Áp dụng nguyên tắc HAX/PAIR
+
+| Nguyên tắc | Áp dụng | Vị trí Prototype |
+|---|---|---|
+| **G9 — Support efficient correction** | Cho phép người dùng sửa thông tin đã nhập và gửi lại yêu cầu | Nút "Sửa thông tin" trong chat |
+| **G10 — Scope services when in doubt** | Không tự tư vấn thuốc khi có dấu hiệu nguy hiểm hoặc yêu cầu vượt thẩm quyền | Cảnh báo ở Kịch bản 4 và thông báo từ chối ở Kịch bản 6 |
+| **G11 — Make clear why the system did what it did** | Giải thích vì sao AI cảnh báo cấp cứu hoặc từ chối bán thuốc | Dòng "Lý do" trong mỗi thông báo |
+
+### 3.4. Lỗi không thể sửa chỉ bằng câu chữ
+
+**Lỗi:** AI vẫn có thể gọi `goi_y_san_pham` khi phát hiện dấu hiệu cấp cứu hoặc gọi `ban_thuoc_ke_don` khi người dùng yêu cầu mua kháng sinh.
+
+**Vì sao sửa câu chữ không đủ?**
+
+Dù AI bổ sung cảnh báo hoặc lời từ chối, các hành động nguy hiểm vẫn có thể được thực hiện nếu hệ thống không kiểm soát quyền gọi tool.
+
+**Giải pháp ở mức hệ thống:**
+
+1. **Safety Check:** Kiểm tra dấu hiệu nguy hiểm trước khi gọi tool.
+2. **Emergency Rule:** Có dấu hiệu cấp cứu → chặn gợi ý thuốc, kích hoạt `khuyen_di_kham`.
+3. **Permission Control:** Cấm AI gọi `ban_thuoc_ke_don` trong mọi trường hợp.
+4. **Human Handoff:** Cho phép `chuyen_duoc_si` khi cần chuyên môn; không để việc chuyển người làm chậm cảnh báo cấp cứu.
+5. **Action Validation:** Kiểm tra quyền và điều kiện an toàn trước khi thực thi mỗi hành động, không chỉ dựa vào lời nhắc cho LLM.
+
+### 3.5. Tổng kết UX
+
+| Luồng | Kịch bản | Hành vi AI | Quyền tự chủ |
+|---|---|---|---|
+| Happy Path | Hỏi thông tin sản phẩm thông thường | Trả lời dựa trên dữ liệu được xác minh, không tự kê đơn | Tự trả lời trong phạm vi |
+| Failure Path 1 | Kịch bản 4 — Sốt cao, khó thở | Cảnh báo cấp cứu, không gợi ý thuốc | Tự kích hoạt cảnh báo |
+| Failure Path 2 | Kịch bản 6 — Yêu cầu mua kháng sinh | Từ chối bán tự động, hỗ trợ chuyển dược sĩ | Cấm bán thuốc kê đơn |
+| Correction Path | Người dùng sửa thông tin | Cập nhật ngữ cảnh, kiểm tra lại trước khi hành động | Tự xử lý thông tin, tuân thủ giới hạn tool |
+
+**Kết luận:** Hệ thống phải ưu tiên an toàn người bệnh, minh bạch về giới hạn của AI và kiểm soát hành động ở cấp độ hệ thống. AI được tự động cảnh báo nguy hiểm nhưng không được tự thực hiện hành động vượt thẩm quyền.
 
 ## §4. Mức tự chủ  (chặng 4)
 Với mỗi tool:
