@@ -318,6 +318,8 @@
       }
     }
 
+    .chat-column { min-width: 0; }
+
     /* CHAT CONTAINER */
     .chat-section {
       background: var(--card-bg);
@@ -928,6 +930,7 @@
     }
 
     /* RIGHT SIDEBAR */
+    .chat-column,
     .sidebar {
       display: flex;
       flex-direction: column;
@@ -1262,57 +1265,76 @@
   <!-- MAIN DASHBOARD -->
   <main>
     <!-- LEFT: CHAT WORKSPACE -->
-    <section class="chat-section">
-      <!-- Chat Header -->
-      <div class="chat-header">
-        <div class="assistant-profile">
-          <div class="assistant-avatar">
-            <svg class="icon" viewBox="0 0 24 24">
-              <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 3.07V3a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 9H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"></path>
-            </svg>
-            <span class="status-dot"></span>
+    <div class="chat-column">
+      <section class="chat-section">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="assistant-profile">
+            <div class="assistant-avatar">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 3.07V3a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 9H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"></path>
+              </svg>
+              <span class="status-dot"></span>
+            </div>
+            <div class="assistant-info">
+              <h3>
+                Trợ lý Dược sĩ AI (Pharmacity)
+                <span class="bot-badge">AI Sàng lọc ban đầu</span>
+              </h3>
+              <p id="chatSubInfo">Phiên tư vấn: PHM-2026-8841 · Dữ liệu giả lập nội bộ</p>
+            </div>
           </div>
-          <div class="assistant-info">
-            <h3>
-              Trợ lý Dược sĩ AI (Pharmacity)
-              <span class="bot-badge">AI Sàng lọc ban đầu</span>
-            </h3>
-            <p id="chatSubInfo">Phiên tư vấn: PHM-2026-8841 · Dữ liệu giả lập nội bộ</p>
+
+          <div id="safetyBadgeContainer">
+            <!-- Dynamically populated badge -->
           </div>
         </div>
 
-        <div id="safetyBadgeContainer">
-          <!-- Dynamically populated badge -->
+        <!-- Messages Stream -->
+        <div class="chat-messages" id="chatMessages">
+          <!-- Rendered via JS -->
         </div>
-      </div>
 
-      <!-- Messages Stream -->
-      <div class="chat-messages" id="chatMessages">
-        <!-- Rendered via JS -->
-      </div>
-
-      <!-- Quick Chips & Input Field -->
-      <div class="chat-footer">
-        <div class="quick-chips" id="quickChipsContainer">
-          <!-- Contextual quick reply chips -->
+        <!-- Quick Chips & Input Field -->
+        <div class="chat-footer">
+          <div class="quick-chips" id="quickChipsContainer">
+            <!-- Contextual quick reply chips -->
+          </div>
+          <form class="chat-input-form" id="chatForm">
+            <input 
+              type="text" 
+              class="chat-input" 
+              id="chatInput" 
+              placeholder="Nhập tin nhắn hỏi Dược sĩ AI (Hệ thống mô phỏng)..." 
+              autocomplete="off"
+            />
+            <button type="submit" class="btn-send" id="btnSend" title="Gửi tin nhắn">
+              <svg class="icon" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
         </div>
-        <form class="chat-input-form" id="chatForm">
-          <input 
-            type="text" 
-            class="chat-input" 
-            id="chatInput" 
-            placeholder="Nhập tin nhắn hỏi Dược sĩ AI (Hệ thống mô phỏng)..." 
-            autocomplete="off"
-          />
-          <button type="submit" class="btn-send" id="btnSend" title="Gửi tin nhắn">
-            <svg class="icon" viewBox="0 0 24 24">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </section>
+
+      <!-- CARD 3: SYSTEM SAFETY INVARIANTS -->
+      <div class="panel" style="background: #fafbfc; border-color: #d0d7de;">
+        <div class="panel-header">
+          <h3 class="panel-title" style="font-size: 13.5px;">
+            <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
-          </button>
-        </form>
+            Healthcare Safety Guardrails (Ràng buộc an toàn hệ thống y tế)
+          </h3>
+        </div>
+        <div style="font-size: 12px; color: var(--ink-muted); line-height: 1.55;">
+          <p>• <b>Không bắt chờ dược sĩ khi cấp cứu:</b> Khi có dấu hiệu sốt cao kèm khó thở, AI kích hoạt cảnh báo gọi 115 ngay lập tức, không bắt khách chờ chuyển máy.</p>
+          <p style="margin-top: 4px;">• <b>Trung thực về trạng thái chuyển giao:</b> Khi mô phỏng kết nối dược sĩ thất bại, hệ thống không bao giờ báo "đã nhận ca" giả mạo và duy trì cảnh báo an toàn.</p>
+          <p style="margin-top: 4px;">• <b>Cấm bán thuốc kê đơn tuyệt đối:</b> AI không có thẩm quyền chuyên môn để thay thế hay bán kháng sinh dù người dùng van nài hay sửa đổi lý do.</p>
+        </div>
       </div>
-    </section>
+    </div>
 
     <!-- RIGHT: AUTONOMY & EXPLANATION SIDEBAR -->
     <aside class="sidebar">
@@ -1358,23 +1380,6 @@
         <ul class="hax-list" id="haxList">
           <!-- Rendered via JS -->
         </ul>
-      </div>
-
-      <!-- CARD 3: SYSTEM SAFETY INVARIANTS -->
-      <div class="panel" style="background: #fafbfc; border-color: #d0d7de;">
-        <div class="panel-header">
-          <h3 class="panel-title" style="font-size: 13.5px;">
-            <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-            Healthcare Safety Guardrails (Ràng buộc an toàn hệ thống y tế)
-          </h3>
-        </div>
-        <div style="font-size: 12px; color: var(--ink-muted); line-height: 1.55;">
-          <p>• <b>Không bắt chờ dược sĩ khi cấp cứu:</b> Khi có dấu hiệu sốt cao kèm khó thở, AI kích hoạt cảnh báo gọi 115 ngay lập tức, không bắt khách chờ chuyển máy.</p>
-          <p style="margin-top: 4px;">• <b>Trung thực về trạng thái chuyển giao:</b> Khi mô phỏng kết nối dược sĩ thất bại, hệ thống không bao giờ báo "đã nhận ca" giả mạo và duy trì cảnh báo an toàn.</p>
-          <p style="margin-top: 4px;">• <b>Cấm bán thuốc kê đơn tuyệt đối:</b> AI không có thẩm quyền chuyên môn để thay thế hay bán kháng sinh dù người dùng van nài hay sửa đổi lý do.</p>
-        </div>
       </div>
 
     </aside>
