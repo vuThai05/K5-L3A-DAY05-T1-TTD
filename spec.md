@@ -5,17 +5,36 @@
 > **Một quyết định = bốn ý:** đã cân nhắc phương án nào · chọn phương án nào · vì sao · loại các phương án kia vì sao. Bằng chứng = lập luận trỏ về một chỗ cụ thể: tool nào, dòng dữ liệu nào của track, điều gì trong mục "Sản phẩm thật hôm nay", chỗ nào trên prototype (ảnh đánh số). Không chạy agent.
 
 ```markdown
+
 # Bài nộp LAB5 — [Track] · Nhóm [tên]
-[Danh sách thành viên và việc mỗi người làm — copy bảng từ README]
+
+Lớp: L3A · Bàn / zone: ____ · Track: ____
+
+| Họ và Tên | Mã Học Viên | Việc đã làm |
+|---|---|---|
+| Vũ Quang Thái | 2A202603545 |  |
+| Nguyễn Thị Thuỳ Dung | 2A202603552 |  |
+| Ngô Văn Tuân | 2A202603630 |  |
 
 ## §1. Lát cắt & phạm vi
-- Lát cắt (chép từ track).
-- 3 việc tính năng KHÔNG làm, mỗi việc một câu vì sao.
+- Lát cắt (chép từ track):
+Sản phẩm: Kênh chat Hỏi dược sĩ của Pharmacity.
+Người dùng chính: Khách nhắn hỏi thuốc cho bản thân hoặc người nhà.
+Người dùng hỗ trợ: Dược sĩ trực tuyến.
+Đầu vào: Tin nhắn như "Em đau họng hai hôm nay, có thuốc gì không?".
+Quyết định của AI: Gợi ý sản phẩm, hỏi sàng lọc, chuyển dược sĩ hoặc khuyên đi khám ngay.
+Kết quả: Không gợi ý sai sản phẩm và không để ca nguy hiểm bị chờ đợi.
+
+- 3 việc tính năng KHÔNG làm, mỗi việc một câu vì sao:
+Tự chẩn đoán bệnh và chỉ định liều thuốc vì thiếu đánh giá lâm sàng, sai sót có thể trực tiếp gây hại sức khỏe.
+Bán hoặc thay thế thuốc kê đơn qua chat tự động vì không thuộc thẩm quyền của AI; không thể bảo đảm an toàn chỉ bằng tin nhắn.
+Tự lưu thông tin sức khỏe khi chưa được đồng ý vì có nguy cơ xâm phạm riêng tư và lộ dữ liệu nhạy cảm.
 
 ## §2. Kịch bản rủi ro  (chặng 2)
-- ≥8 kịch bản, mỗi lớp ①②③④ ít nhất một; mỗi kịch bản: tin người dùng · lớp · AI có thể sai thế nào · sản phẩm tốt nên làm gì · nhãn (nhẹ / sửa được / không chấp nhận được).
-- Bằng chứng: cột "AI có thể sai thế nào" trỏ về một tool hoặc một dòng dữ liệu của track (hoặc chỗ dữ liệu không có).
-- Quyết định: 2 kịch bản đắt nhất — vì sao đắt hơn các kịch bản còn lại; kịch bản nào suýt được chọn và vì sao không.
+| # | Tin người dùng nhắn | Lớp | AI có thể sai thế nào | Một sản phẩm tốt nên làm gì | Nhãn
+|---|---|---|---|---|---|
+| 1 | "Thuốc X có thành phần gì, có phù hợp với tôi không?" | ① Nguồn sự thật | AI không có dữ liệu thành phần hoặc chống chỉ định của sản phẩm nhưng vẫn khẳng định an toàn, liên quan đến goi_y_san_pham. | Không tự suy đoán; thông báo chưa đủ căn cứ và chuyển dược sĩ xác minh. | Không chấp nhận được |
+|  |  |  |  |  |
 
 ## §3. Khi AI sai  (chặng 3)
 Với mỗi kịch bản đắt nhất:
