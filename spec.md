@@ -151,20 +151,56 @@ Dù AI bổ sung cảnh báo hoặc lời từ chối, các hành động nguy h
 **Kết luận:** Hệ thống phải ưu tiên an toàn người bệnh, minh bạch về giới hạn của AI và kiểm soát hành động ở cấp độ hệ thống. AI được tự động cảnh báo nguy hiểm nhưng không được tự thực hiện hành động vượt thẩm quyền.
 
 ## §4. Mức tự chủ  (chặng 4)
-Với mỗi tool:
-- Mức của nhóm (tự làm / cần người duyệt / cấm). Nếu cần người duyệt: ai duyệt · người duyệt thấy gì · quá hạn thì sao.
-- Lý do theo cost-of-error: sai thì ai chịu gì · đảo lại được không · chờ người thì mất gì.
-- Phương án đã cân nhắc và vì sao loại.
-Thêm:
-- Tool khó xếp nhất: mỗi người từng chọn gì, cái giá của mỗi phía (trỏ về kịch bản ở §2), nhóm chốt thế nào.
-- Thử mức đã đặt trên 2 kịch bản đắt nhất + 1 kịch bản bình thường: cái sai có bị chặn không? còn việc nào làm khi lẽ ra phải hỏi? người dùng bình thường có phải chờ vô ích không?
-- Luật thêm hoặc tool tách bước (nếu có), và vì sao.
-- Một mức tự chủ đã đổi lời hứa nào với người dùng.
+Với mỗi tool, nhóm đặt mức tự chủ theo chi phí sai lầm và khả năng đảo ngược:
+
+- `khuyen_di_kham` — Tự làm.
+  - **Mức:** AI tự kích hoạt khi tin nhắn có dấu hiệu nguy hiểm rõ như đau ngực, khó thở, sốt cao kèm khó thở, hoặc trẻ nhỏ có biểu hiện nặng.
+  - **Ai duyệt:** Không cần người duyệt; hành động này phải diễn ra ngay để giảm thiểu mất thời gian cấp cứu.
+  - **Lý do theo cost-of-error:** Sai ở đây là cảnh báo thừa, còn sai bỏ sót là tổn thất lớn và thường không đảo ngược. Trong prototype, mặt khách hiển thị nút "Gọi 115" và cảnh báo rõ; trong màn dược sĩ, thông báo rõ "không chờ quy trình tư vấn sản phẩm".
+  - **Phương án được cân nhắc:** Chờ dược sĩ / hỏi lại thêm câu; nhóm loại vì chậm trễ có thể khiến người bệnh không kịp cấp cứu. Đây là cách làm phù hợp với kịch bản 4 ở §2.
+
+- `chuyen_duoc_si` — Tự làm có trạng thái rõ ràng.
+  - **Mức:** AI được tự chuyển cuộc trò chuyện nhưng không được báo là đã “đã nhận ca” nếu chưa xác nhận.
+  - **Ai duyệt:** Dược sĩ trực hoặc nhân sự hỗ trợ nhận ca; AI chỉ gửi thông tin cần thiết và giữ trạng thái lỗi nếu không kết nối được.
+  - **Người duyệt thấy gì:** Tóm tắt triệu chứng, thông tin khách đã nhập, câu hỏi còn thiếu, và bản nháp không gợi ý thuốc.
+  - **Quá hạn thì sao:** Nếu không kết nối được, hệ thống không lấp đầy trạng thái thành công; vẫn hiển thị cảnh báo khẩn cấp hoặc hướng dẫn gọi 115. Trong prototype, "Mô phỏng lỗi gửi" và "mất kết nối" khiến UI không báo đáng tin cậy.
+  - **Lý do:** Chuyển người là cần thiết khi chưa đủ thông tin hoặc cao tuổi/đang dùng thuốc kê đơn, nhưng không thể gán quyết định cho AI. Thời gian chờ chuyển không được làm người dùng mất cảnh báo nguy hiểm.
+
+- `goi_y_san_pham` — Cần người duyệt / khóa trong một số tình huống.
+  - **Mức:** Không tự gợi ý khi người dùng có triệu chứng chưa đủ thông tin, có thai kỳ, trẻ nhỏ, hoặc có dấu hiệu nguy hiểm. Khi đủ dữ kiện và rõ ràng, chỉ dược sĩ hoặc quy trình có người duyệt mới được cho phép.
+  - **Ai duyệt:** Dược sĩ hoặc nhân viên hỗ trợ kiểm tra thành phần, chống chỉ định, thuốc đang dùng và tình trạng người bệnh.
+  - **Người duyệt thấy gì:** Căn cứ, loại thuốc đề xuất, cảnh báo tương tác và ràng buộc an toàn.
+  - **Quá hạn thì sao:** Không gợi ý thuốc, hỏi lại hoặc chuyển dược sĩ.
+  - **Lý do:** Đây là tool nguy hiểm nhất khi sai: có thể khiến khách dùng thuốc sai, thậm chí gây hại. Nó vừa có thể giúp trong trường hợp thường, nhưng không thể tự quyết định trong các kịch bản rủi ro lớn như kịch bản 1, 3, 4, 6, 7 ở §2. Trong prototype, góc phụ "Mức tự chủ đang áp dụng" cho thấy `goi_y_san_pham` đang bị khóa và chỉ dùng sau khi dược sĩ duyệt.
+
+- `ban_thuoc_ke_don` — Cấm hoàn toàn.
+  - **Mức:** Không cho phép AI gọi tool nào trong mọi trường hợp, kể cả khi người dùng yêu cầu.
+  - **Ai duyệt:** Không có duyệt, vì không thuộc thẩm quyền hệ thống.
+  - **Lý do:** Cost-of-error rất cao, không đảo ngược được, dễ gây nguy hiểm và vượt phạm vi. Trong kịch bản 6, AI không được tự thay đổi thuốc đang dùng hay “kháng sinh mạnh hơn” mà phải từ chối và chuyển dược sĩ. Prototype cũng bỏ hẳn nút “bán” và không hiển thị tool này trên màn hình.
+  - **Phương án cân nhắc:** Cho phép AI gợi ý “tổng quan” hoặc hỏi thêm; nhóm loại vì dù bổ sung thông tin, AI vẫn không có thẩm quyền bán thuốc kê đơn.
+
+- Tool khó xếp nhất: `goi_y_san_pham`.
+  - **Một phía:** Nếu tự động gợi ý nhanh, người dùng nhận được phản hồi gần ngay; phù hợp với trường hợp bệnh nhẹ, có đủ thông tin và không có nguy cơ.
+  - **Một phía khác:** Nếu gợi ý thiếu dữ liệu hoặc trong triệu chứng nguy hiểm, sai sót có thể gây hại và kéo dài đến thuốc đã uống. Bản thân track và prototype đều nhấn mạnh rằng chỉ nên dùng sau khi có sàng lọc đủ, không thay thế cho chuyên môn.
+  - **Nhóm chốt:** không để `goi_y_san_pham` tự động hoạt động khi người dùng chưa đủ thông tin hoặc có dấu hiệu nguy hiểm. Tức là: nếu không rõ -> hỏi thêm; nếu nguy hiểm -> khuyên đi khám; nếu cần chuyên môn -> chuyển dược sĩ; chỉ khi dược sĩ duyệt mới gợi ý sản phẩm trong phạm vi an toàn.
+
+- Kiểm tra mức tự chủ trên 2 kịch bản đắt nhất + 1 kịch bản thường:
+  - **Kịch bản 4 — đau ngực, khó thở:** `khuyen_di_kham` tự kích hoạt và `goi_y_san_pham` bị chặn. Nếu thông báo dược sĩ không thành công, UI vẫn hiển thị hướng dẫn cấp cứu, không giấu lỗi. Kết quả: sai lầm bị chặn.
+  - **Kịch bản 6 — yêu cầu mua kháng sinh:** `ban_thuoc_ke_don` bị cấm, không có nút bán, và AI chỉ chuyển dược sĩ hoặc giải thích phạm vi. Kết quả: không có hành động vượt thẩm quyền.
+  - **Kịch bản thường — đau họng 2 ngày:** AI không gợi ý thuốc ngay khi thiếu thông tin; thay vào đó, hỏi thêm thông tin hoặc chuyển dược sĩ. Kết quả: người dùng không phải chờ vô ích; hệ thống tránh gợi ý sai. 
+
+- Luật thêm / tool tách bước:
+  - **Safety gate trước tool:** tất cả tool đều phải đi qua kiểm tra dấu hiệu nguy hiểm và thông tin sàng lọc trước khi đề xuất thuốc.
+  - **Permission gate:** `ban_thuoc_ke_don` bị cấm tuyệt đối; `goi_y_san_pham` chỉ được kích hoạt sau khi dữ kiện đủ và có người duyệt hoặc quy trình cho phép.
+  - **Tách trạng thái from action:** AI có thể báo "đang chuyển dược sĩ" hoặc "đã cập nhật dấu hiệu nguy hiểm" nhưng không được báo là đã xử lý thành công nếu chưa thực sự kết nối. Đây là điều prototype làm rõ bằng trạng thái lỗi và các nút "Mô phỏng mất kết nối".
+
+- Một mức tự chủ đã đổi lời hứa nào với người dùng:
+  - Trước đây, người dùng có thể hiểu rằng AI "hỏi thuốc" và "đề xuất thuốc" rất nhanh; sau khi đặt mức tự chủ này, lời hứa chuyển thành: "AI sẽ hỗ trợ sàng lọc ban đầu, cảnh báo khẩn cấp, yêu cầu thêm thông tin hoặc chuyển dược sĩ, nhưng không tự gợi ý thuốc nguy hiểm hoặc bán thuốc kê đơn".
+  - Đây là thay đổi hợp lý vì trong y tế, lời hứa về tốc độ không đáng bằng an toàn; hệ thống phải nói rõ giới hạn và không che giấu “đường lui an toàn”.
+
+=> Kết luận: AI được tự xử lý các nhiệm vụ an toàn, rõ ràng, dễ đảo ngược; còn các quyết định có nguy cơ sức khỏe cao hoặc vượt thẩm quyền thì bị chặn hoặc phải chuyển người. Đây là mức tự chủ phù hợp với prototype và với yêu cầu “không gợi ý sai sản phẩm và không để ca nguy hiểm bị chờ đợi” ở §1.
 
 ## §5. Prototype  (chặng 5)
-- Link hoặc file · công cụ · phần nào mock · có lời gọi AI thật không.
-- 1–2 ảnh có đánh số; mỗi số: thể hiện gì · nguyên tắc HAX/PAIR nào · mức tự chủ nào.
-- Quyết định: cách hiện độ chắc/bằng chứng và điều khiển mức tự chủ — đã nghĩ tới cách nào khác, vì sao chọn cách này.
 
 ## §6. Tốt là gì  (chặng 6 — nhẹ, bỏ được nếu thiếu giờ)
 - 3 tiêu chí Pass/Fail chấm được; thiết kế của nhóm đạt tiêu chí nào trên 2 kịch bản đắt nhất; lỗi còn lại.
