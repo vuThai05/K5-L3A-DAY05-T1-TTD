@@ -990,6 +990,13 @@
       background: #fffdf5;
     }
 
+    .tool-list details { border-bottom: 1px solid var(--border); padding: 9px 8px; }
+    .tool-list .highlight-row { background: #fff9e9; }
+    .tool-list summary { cursor: pointer; font-size: 14px; }
+    .tool-list .pill-level { margin-left: 5px; white-space: normal; }
+    .tool-list .status-indicator { display: block; margin: 4px 0 0 17px; }
+    .tool-list p { margin: 8px 0 2px 17px; font-size: 13px; line-height: 1.5; }
+
     .tool-name-code {
       font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
       font-size: 11.5px;
@@ -1318,30 +1325,16 @@
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            Card 1 – Tool Autonomy (Chính sách 5 Tool)
+            Card 1 – Chính sách của 5 công cụ
           </h2>
           <span style="font-size: 11px; color: var(--ink-muted);">spec.md §4</span>
         </div>
         
         <p style="font-size: 12px; color: var(--ink-muted); margin-bottom: 10px;">
-          Mỗi tool được ấn định mức tự chủ theo <b>chi phí sai lầm (Cost-of-Error)</b> và <b>khả năng đảo ngược</b>. Dòng tô vàng làm nổi bật các tool đang được kiểm soát trong kịch bản hiện tại:
+          Các mục tô vàng liên quan đến kịch bản hiện tại. Chọn một công cụ để xem chính sách và chi phí sai lầm.
         </p>
 
-        <div class="table-container">
-          <table class="autonomy-table">
-            <thead>
-              <tr>
-                <th>Tool</th>
-                <th>Mức tự chủ</th>
-                <th>Chính sách & Chi phí sai lầm</th>
-                <th>Trạng thái hiện tại</th>
-              </tr>
-            </thead>
-            <tbody id="toolTableBody">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
+        <div id="toolTableBody" class="tool-list"></div>
       </div>
 
       <!-- CARD 2: HAX/PAIR PRINCIPLES -->
@@ -1440,19 +1433,19 @@
     const toolPolicies = [
       {
         id: 'khuyen_di_kham',
-        name: 'khuyen_di_kham',
-        autonomy: 'Auto',
+        name: 'Cảnh báo khẩn cấp',
+        autonomy: 'Tự động',
         pillClass: 'pill-auto',
-        policy: 'AI can automatically trigger emergency guidance when clear danger signs are detected. AI tự kích hoạt ngay khi tin nhắn có dấu hiệu sốt cao kèm thở khó, không cần duyệt vì chậm trễ cấp cứu không thể đảo ngược.',
+        policy: 'AI tự kích hoạt ngay khi tin nhắn có dấu hiệu sốt cao kèm thở khó, không cần duyệt vì chậm trễ cấp cứu không thể đảo ngược.',
         statusMap: {
-          1: { label: 'Active – Auto (Đang kích hoạt)', class: 'active', icon: '🚨' },
-          2: { label: 'Available when necessary', class: 'idle', icon: '⚪' },
+          1: { label: 'Đang kích hoạt', class: 'active', icon: '🚨' },
+          2: { label: 'Sẵn sàng khi cần', class: 'idle', icon: '⚪' },
           3: { 
             get: () => {
               if (state.sc3.answers.symptoms === 'severe') {
-                return { label: 'Active (Dấu hiệu nguy hiểm)', class: 'active', icon: '🚨' };
+                return { label: 'Dấu hiệu nguy hiểm', class: 'active', icon: '🚨' };
               }
-              return { label: 'Available if danger signs appear', class: 'idle', icon: '⚪' };
+              return { label: 'Sẵn sàng khi có dấu hiệu nguy hiểm', class: 'idle', icon: '⚪' };
             }
           }
         },
@@ -1460,29 +1453,29 @@
       },
       {
         id: 'chuyen_duoc_si',
-        name: 'chuyen_duoc_si',
-        autonomy: 'Auto with status',
+        name: 'Chuyển dược sĩ',
+        autonomy: 'Tự động, có báo trạng thái',
         pillClass: 'pill-status',
-        policy: 'AI can initiate handoff but must accurately show whether the pharmacist has actually received the case. Tự chuyển ca nhưng phải trung thực về trạng thái tiếp nhận.',
+        policy: 'Tự chuyển ca nhưng phải trung thực về trạng thái tiếp nhận.',
         statusMap: {
           1: { 
             get: () => {
               if (state.sc1.connectionFailed) return { label: 'Chưa thể kết nối (Mất mạng)', class: 'blocked', icon: '⚠️' };
               if (state.sc1.pharmacistNotified) return { label: 'Đã báo Dược sĩ trực', class: 'active', icon: '🔔' };
-              return { label: 'Available – Auto with status', class: 'idle', icon: '⚪' };
+              return { label: 'Sẵn sàng chuyển ca', class: 'idle', icon: '⚪' };
             }
           },
           2: { 
             get: () => {
               if (state.sc2.handoffStatus === 'success') return { label: 'Đã kết nối Dược sĩ', class: 'active', icon: '✅' };
               if (state.sc2.handoffStatus === 'failed') return { label: 'Chưa thể kết nối Dược sĩ', class: 'blocked', icon: '❌' };
-              return { label: 'Available – Auto with status', class: 'waiting', icon: '⏳' };
+              return { label: 'Sẵn sàng chuyển ca', class: 'waiting', icon: '⏳' };
             }
           },
           3: { 
             get: () => {
-              if (isHighRiskSc3()) return { label: 'Available (Cần chuyển Dược sĩ)', class: 'active', icon: '👨‍⚕️' };
-              return { label: 'Available', class: 'idle', icon: '⚪' };
+              if (isHighRiskSc3()) return { label: 'Cần chuyển Dược sĩ', class: 'active', icon: '👨‍⚕️' };
+              return { label: 'Sẵn sàng', class: 'idle', icon: '⚪' };
             }
           }
         },
@@ -1490,18 +1483,18 @@
       },
       {
         id: 'goi_y_san_pham',
-        name: 'goi_y_san_pham',
-        autonomy: 'Human approval / Restricted',
+        name: 'Gợi ý sản phẩm',
+        autonomy: 'Cần dược sĩ duyệt',
         pillClass: 'pill-restricted',
-        policy: 'AI must not independently recommend products in high-risk or insufficient-information situations. Khóa khi chưa đủ thông tin hoặc rủi ro; chỉ mở khi sàng lọc an toàn và Dược sĩ duyệt.',
+        policy: 'Khóa khi chưa đủ thông tin hoặc rủi ro; chỉ mở khi sàng lọc an toàn và Dược sĩ duyệt.',
         statusMap: {
-          1: { label: 'Blocked (Bị chặn do cấp cứu)', class: 'blocked', icon: '⛔' },
-          2: { label: 'Restricted (Bị hạn chế)', class: 'blocked', icon: '🔒' },
+          1: { label: 'Bị chặn do cấp cứu', class: 'blocked', icon: '⛔' },
+          2: { label: 'Bị hạn chế', class: 'blocked', icon: '🔒' },
           3: { 
             get: () => {
-              if (state.sc3.pharmacistApproved) return { label: 'Approved (Dược sĩ đã duyệt)', class: 'active', icon: '✅' };
+              if (state.sc3.pharmacistApproved) return { label: 'Dược sĩ đã duyệt', class: 'active', icon: '✅' };
               if (isScreeningComplete() && !isHighRiskSc3()) return { label: 'Chờ Dược sĩ duyệt', class: 'waiting', icon: '⏳' };
-              return { label: 'Restricted until screening & approval', class: 'blocked', icon: '🔒' };
+              return { label: 'Chờ sàng lọc và phê duyệt', class: 'blocked', icon: '🔒' };
             }
           }
         },
@@ -1509,31 +1502,31 @@
       },
       {
         id: 'ban_thuoc_ke_don',
-        name: 'ban_thuoc_ke_don',
-        autonomy: 'Forbidden',
+        name: 'Bán thuốc kê đơn',
+        autonomy: 'Bị cấm',
         pillClass: 'pill-forbidden',
-        policy: 'AI must never execute this action. AI tuyệt đối cấm bán hoặc thay thế thuốc kê đơn (kháng sinh) trong mọi trường hợp do nguy cơ kháng thuốc và vượt thẩm quyền y khoa.',
+        policy: 'AI tuyệt đối cấm bán hoặc thay thế thuốc kê đơn (kháng sinh) trong mọi trường hợp do nguy cơ kháng thuốc và vượt thẩm quyền y khoa.',
         statusMap: {
-          1: { label: 'Forbidden (Cấm tuyệt đối)', class: 'blocked', icon: '⛔' },
-          2: { label: 'Forbidden (Cấm tuyệt đối)', class: 'blocked', icon: '⛔' },
-          3: { label: 'Forbidden (Cấm tuyệt đối)', class: 'blocked', icon: '⛔' }
+          1: { label: 'Cấm tuyệt đối', class: 'blocked', icon: '⛔' },
+          2: { label: 'Cấm tuyệt đối', class: 'blocked', icon: '⛔' },
+          3: { label: 'Cấm tuyệt đối', class: 'blocked', icon: '⛔' }
         },
         highlightIn: [2]
       },
       {
         id: 'luu_ghi_chu_suc_khoe',
-        name: 'luu_ghi_chu_suc_khoe',
-        autonomy: 'Consent required',
+        name: 'Lưu ghi chú sức khỏe',
+        autonomy: 'Cần sự đồng ý',
         pillClass: 'pill-consent',
-        policy: 'AI must obtain explicit consent before saving sensitive health information. Cần sự đồng ý rõ ràng trước khi ghi nhận tiền sử dị ứng hoặc bệnh nền vào hồ sơ y tế.',
+        policy: 'Cần sự đồng ý rõ ràng trước khi ghi nhận tiền sử dị ứng hoặc bệnh nền vào hồ sơ y tế.',
         statusMap: {
-          1: { label: 'Consent required (Cần xác nhận)', class: 'idle', icon: '🛡️' },
-          2: { label: 'Consent required (Cần xác nhận)', class: 'idle', icon: '🛡️' },
+          1: { label: 'Cần xác nhận', class: 'idle', icon: '🛡️' },
+          2: { label: 'Cần xác nhận', class: 'idle', icon: '🛡️' },
           3: { 
             get: () => {
-              if (state.healthDataConsent === true) return { label: 'Consent Granted (Đã đồng ý)', class: 'active', icon: '✅' };
-              if (state.healthDataConsent === false) return { label: 'Consent Denied (Đã từ chối)', class: 'blocked', icon: '❌' };
-              return { label: 'Consent required (Cần xác nhận)', class: 'idle', icon: '🛡️' };
+              if (state.healthDataConsent === true) return { label: 'Đã đồng ý', class: 'active', icon: '✅' };
+              if (state.healthDataConsent === false) return { label: 'Đã từ chối', class: 'blocked', icon: '❌' };
+              return { label: 'Cần xác nhận', class: 'idle', icon: '🛡️' };
             }
           }
         },
@@ -1625,6 +1618,7 @@
 
     function renderToolTable() {
       const tbody = document.getElementById('toolTableBody');
+      const expanded = new Set(Array.from(tbody.querySelectorAll("details[open]"), item => item.dataset.tool));
       tbody.innerHTML = toolPolicies.map(t => {
         const isHighlighted = t.highlightIn.includes(state.scenario);
         const statusObj = typeof t.statusMap[state.scenario].get === 'function' 
@@ -1632,22 +1626,12 @@
           : t.statusMap[state.scenario];
 
         return `
-          <tr class="${isHighlighted ? 'highlight-row' : ''}">
-            <td>
-              <span class="tool-name-code">${t.name}</span>
-            </td>
-            <td>
-              <span class="pill-level ${t.pillClass}">${t.autonomy}</span>
-            </td>
-            <td style="color: var(--ink-muted); font-size: 11.5px; line-height: 1.4;">
-              ${t.policy}
-            </td>
-            <td>
-              <span class="status-indicator ${statusObj.class}">
-                ${statusObj.icon} ${statusObj.label}
-              </span>
-            </td>
-          </tr>
+          <details data-tool="${t.id}" class="${isHighlighted ? 'highlight-row' : ''}" ${expanded.has(t.id) ? 'open' : ''}>
+            <summary><strong>${t.name}</strong> <span class="pill-level ${t.pillClass}">${t.autonomy}</span>
+              <span class="status-indicator ${statusObj.class}">${statusObj.icon} ${statusObj.label}</span>
+            </summary>
+            <p><strong>Chính sách &amp; Chi phí sai lầm</strong><br>${t.policy}</p>
+          </details>
         `;
       }).join('');
     }
