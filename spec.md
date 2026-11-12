@@ -4,7 +4,6 @@
 >
 > **Một quyết định = bốn ý:** đã cân nhắc phương án nào · chọn phương án nào · vì sao · loại các phương án kia vì sao. Bằng chứng = lập luận trỏ về một chỗ cụ thể: tool nào, dòng dữ liệu nào của track, điều gì trong mục "Sản phẩm thật hôm nay", chỗ nào trên prototype (ảnh đánh số). Không chạy agent.
 
-```markdown
 
 # Bài nộp LAB5 — [Track] · Nhóm [tên]
 
@@ -201,10 +200,13 @@ Với mỗi tool, nhóm đặt mức tự chủ theo chi phí sai lầm và kh�
 => Kết luận: AI được tự xử lý các nhiệm vụ an toàn, rõ ràng, dễ đảo ngược; còn các quyết định có nguy cơ sức khỏe cao hoặc vượt thẩm quyền thì bị chặn hoặc phải chuyển người. Đây là mức tự chủ phù hợp với prototype và với yêu cầu “không gợi ý sai sản phẩm và không để ca nguy hiểm bị chờ đợi” ở §1.
 
 ## §5. Prototype  (chặng 5)
+- Link hoặc file · công cụ · phần nào mock · có lời gọi AI thật không.
+- 1–2 ảnh có đánh số; mỗi số: thể hiện gì · nguyên tắc HAX/PAIR nào · mức tự chủ nào.
+- Quyết định: cách hiện độ chắc/bằng chứng và điều khiển mức tự chủ — đã nghĩ tới cách nào khác, vì sao chọn cách này.
 
 ## §6. Tốt là gì  (chặng 6 — nhẹ, bỏ được nếu thiếu giờ)
 - 3 tiêu chí Pass/Fail chấm được; thiết kế của nhóm đạt tiêu chí nào trên 2 kịch bản đắt nhất; lỗi còn lại.
 
 ## §7. Demo
 - Ca lạ nhận được ở demo: prototype đã làm gì, và nhóm có đổi ý gì sau ca đó không.
-```
+
