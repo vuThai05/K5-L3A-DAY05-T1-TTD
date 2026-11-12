@@ -200,13 +200,99 @@ Với mỗi tool, nhóm đặt mức tự chủ theo chi phí sai lầm và kh�
 => Kết luận: AI được tự xử lý các nhiệm vụ an toàn, rõ ràng, dễ đảo ngược; còn các quyết định có nguy cơ sức khỏe cao hoặc vượt thẩm quyền thì bị chặn hoặc phải chuyển người. Đây là mức tự chủ phù hợp với prototype và với yêu cầu “không gợi ý sai sản phẩm và không để ca nguy hiểm bị chờ đợi” ở §1.
 
 ## §5. Prototype  (chặng 5)
-- Link hoặc file · công cụ · phần nào mock · có lời gọi AI thật không.
-- 1–2 ảnh có đánh số; mỗi số: thể hiện gì · nguyên tắc HAX/PAIR nào · mức tự chủ nào.
-- Quyết định: cách hiện độ chắc/bằng chứng và điều khiển mức tự chủ — đã nghĩ tới cách nào khác, vì sao chọn cách này.
 
-## §6. Tốt là gì  (chặng 6 — nhẹ, bỏ được nếu thiếu giờ)
-- 3 tiêu chí Pass/Fail chấm được; thiết kế của nhóm đạt tiêu chí nào trên 2 kịch bản đắt nhất; lỗi còn lại.
+### 5.1. Thông tin Prototype
+
+- **Link hoặc file:** `prototype/index.html`
+- **Công cụ:** HTML, CSS, JavaScript (Vanilla JS), xây dựng bằng Lovable.
+- **Phần mock:** Tin nhắn người dùng, phản hồi AI, kết quả sàng lọc, trạng thái chuyển dược sĩ, kết quả duyệt sản phẩm và trạng thái các tool.
+- **Lời gọi AI thật:** Không. Toàn bộ phản hồi và hành động được mô phỏng bằng dữ liệu giả và JavaScript phía frontend.
+
+### 5.2. Ảnh Prototype
+
+**Ảnh 1 – Phát hiện dấu hiệu cấp cứu**
+
+- **Thể hiện:** Khách thông báo trẻ sốt cao, khó thở. AI tự động kích hoạt `khuyen_di_kham`, hiển thị cảnh báo khẩn cấp, nút gọi 115 và chặn gợi ý sản phẩm. Có thêm trạng thái mô phỏng thông báo dược sĩ thành công/thất bại.
+- **[1] – HAX G10:** AI thu hẹp phạm vi khi phát hiện dấu hiệu nguy hiểm, không tiếp tục tư vấn sản phẩm.
+- **[2] – HAX G11:** Hiển thị lý do cảnh báo dựa trên hai dấu hiệu được người dùng cung cấp: sốt cao và khó thở.
+- **[3] – Mức tự chủ:** `khuyen_di_kham` – Tự làm; `goi_y_san_pham` – Bị khóa; `chuyen_duoc_si` – Tự chuyển nhưng phải hiển thị trạng thái thực tế.
+
+**Ảnh 2 – Từ chối bán thuốc kê đơn**
+
+- **Thể hiện:** Khách yêu cầu mua kháng sinh mạnh hơn. AI từ chối thực hiện `ban_thuoc_ke_don`, giải thích lý do và cung cấp nút chuyển dược sĩ. Giao diện thể hiện cả trạng thái chuyển thành công và thất bại.
+- **[4] – HAX G10:** AI từ chối yêu cầu vượt thẩm quyền, không đưa ra phương án thay thế thuốc kê đơn.
+- **[5] – HAX G11:** Giải thích rõ lý do từ chối và rủi ro của việc tự ý thay đổi kháng sinh.
+- **[6] – Mức tự chủ:** `ban_thuoc_ke_don` – Cấm hoàn toàn; `chuyen_duoc_si` – Tự làm có trạng thái rõ ràng.
+
+### 5.3. Cách thể hiện các mức tự chủ trên giao diện
+
+| Mức tự chủ | Cách thể hiện trên màn hình |
+|---|---|
+| Tự làm | AI tự kích hoạt cảnh báo cấp cứu và hiển thị kết quả ngay. Không cần xác nhận trước. |
+| Tự làm có trạng thái | Có nút chuyển dược sĩ, hiển thị đang chuyển, đã tiếp nhận hoặc thất bại. |
+| Cần người duyệt | Hiển thị sản phẩm ở trạng thái chờ duyệt; chỉ hiển thị kết quả gợi ý sau khi dược sĩ xác nhận. |
+| Cấm | Tool bị khóa, không có nút thực hiện; AI hiển thị lý do từ chối. |
+| Cần sự đồng ý | Hiển thị yêu cầu xác nhận trước khi lưu thông tin sức khỏe; không đồng ý thì không lưu. |
+
+**Cơ chế hoàn tác và kiểm soát:**
+
+- `khuyen_di_kham`: Đây là hành động cảnh báo, không phải giao dịch có thể hoàn tác. Người dùng có thể cập nhật thông tin để AI đánh giá lại, nhưng cảnh báo cấp cứu không bị ẩn chỉ vì người dùng bỏ qua.
+- `chuyen_duoc_si`: Hiển thị trạng thái tiếp nhận thực tế; không giả định có thể thu hồi sau khi dược sĩ đã nhận ca.
+- `goi_y_san_pham`: Không tự động thực hiện trước khi được duyệt, vì vậy không cần hoàn tác hành động gợi ý đã thực hiện.
+- `ban_thuoc_ke_don`: Bị cấm hoàn toàn nên không có hành động để hoàn tác.
+- `luu_ghi_chu_suc_khoe`: Chỉ lưu sau khi người dùng đồng ý. Có thể bổ sung thao tác xóa ghi chú đã lưu để người dùng kiểm soát dữ liệu của mình.
+
+### 5.4. Quyết định thiết kế
+
+**1. Hiển thị độ chắc chắn và bằng chứng**
+
+- **Chọn:** Không sử dụng phần trăm độ tin cậy giả. Thay vào đó, hiển thị trạng thái quyết định và lý do cụ thể, ví dụ: "Phát hiện dấu hiệu nguy hiểm: sốt cao và khó thở".
+- **Phương án khác:** Hiển thị Confidence Score dạng 85%, 90%.
+- **Lý do loại:** Không có mô hình AI thật hoặc dữ liệu đánh giá để tính độ tin cậy; con số phần trăm có thể khiến người dùng hiểu nhầm AI chắc chắn hơn thực tế.
+
+**2. Điều khiển mức tự chủ**
+
+- **Chọn:** Hiển thị bảng trạng thái của 5 tool ở sidebar, phân biệt rõ tự làm, cần người duyệt, bị cấm và cần sự đồng ý. Các thao tác quan trọng có trạng thái xác nhận hoặc kết quả thực tế.
+- **Phương án khác:** Chỉ hiển thị hành động AI trong khung chat.
+- **Lý do loại:** Người dùng khó nhận biết AI đang được phép làm gì và hành động nào bị giới hạn. Bảng tool giúp thể hiện trực quan chính sách tự chủ và hỗ trợ kiểm tra khi demo.
+
+**3. Lựa chọn cơ chế kiểm soát**
+
+- **Chọn:** Kiểm soát trước khi thực hiện đối với hành động có rủi ro cao; sử dụng xác nhận của dược sĩ hoặc người dùng khi cần.
+- **Phương án khác:** Cho AI thực hiện trước rồi cung cấp nút hoàn tác.
+- **Lý do loại:** Trong y tế, một số hậu quả như sử dụng thuốc sai hoặc trì hoãn cấp cứu không thể đảo ngược chỉ bằng thao tác hoàn tác. Vì vậy, ưu tiên chặn hành động nguy hiểm trước khi xảy ra.
+
+## §6. Tốt là gì
+
+Nhóm chấm hai ca có chi phí sai lầm cao nhất ở §2 trên [prototype](prototype/index.html). Ca 4 (trẻ sốt cao, khó thở) tương ứng với kịch bản 1 trên giao diện. Ca 6 (khách muốn mua kháng sinh mạnh hơn khi chưa có đơn mới) tương ứng với kịch bản 2. Mỗi ô **Đạt** khi thỏa toàn bộ điều kiện của tiêu chí cho ca đó. Thiếu một điều kiện là **Trượt**.
+
+| Tiêu chí Pass/Fail | Ca 4 · Bỏ sót cấp cứu | Ca 6 · Tự ý bán thuốc kê đơn |
+|---|---|---|
+| 1. Có bước tiếp theo an toàn ngay trong phản hồi đầu tiên, trước khi dược sĩ tiếp nhận. | **Đạt.** Cảnh báo nêu dấu hiệu sốt cao, khó thở và có nút **Gọi 115** ngay trong khung chat. | **Đạt.** Phản hồi từ chối bán kháng sinh, giải thích lý do và có nút **Gặp dược sĩ**. |
+| 2. Chặn hành động gây hại ở cả trạng thái ban đầu và sau khi chuyển dược sĩ thất bại. | **Đạt.** Ở cả hai trạng thái, màn hình không gợi ý sản phẩm và nút **Gọi 115** vẫn dùng được. | **Đạt.** Ở cả hai trạng thái, khách không thấy thuốc kê đơn thay thế hoặc nút mua thuốc. |
+| 3. Trạng thái chuyển ca khớp với kết quả mô phỏng. Lần lượt chọn thành công rồi thất bại và kiểm tra thông báo sau mỗi lần. | **Đạt.** Khi gửi thành công, giao diện báo đã gửi tóm tắt cho dược sĩ. Khi mất kết nối, giao diện báo chưa chuyển được tín hiệu. | **Đạt.** Khi thành công, giao diện hiển thị dược sĩ tiếp nhận. Khi thất bại, giao diện ghi rõ yêu cầu chưa được tiếp nhận. |
+
+**Lỗi còn lại.** Phản hồi cho tin nhắn nhập tự do phụ thuộc vào kịch bản đang chọn. Có thể thử bằng cách mở kịch bản 2 rồi nhập “Bé sốt cao và khó thở”. Prototype vẫn đi theo luồng từ chối thuốc kê đơn và bỏ sót bước gọi 115, nên tiêu chí 1 trượt với ca nhập chéo này. Hai luồng dựng sẵn đạt cả ba tiêu chí trong mô phỏng. Trước khi phát hành cho khách hàng, cần xử lý được dấu hiệu nguy hiểm trong tin nhắn mới dù người dùng đang ở luồng nào.
 
 ## §7. Demo
-- Ca lạ nhận được ở demo: prototype đã làm gì, và nhóm có đổi ý gì sau ca đó không.
+
+### 7.1. Kịch bản demo (khoảng 4 phút)
+
+1. **Lát cắt (30 giây) — Vũ Quang Thái:** Đây là kênh chat Hỏi dược sĩ của Pharmacity. AI hỗ trợ sàng lọc, cảnh báo dấu hiệu nguy hiểm và chuyển dược sĩ; AI không tự chẩn đoán, bán thuốc kê đơn hay thay thế tư vấn chuyên môn.
+2. **Ca khó — trẻ sốt cao, khó thở — Vũ Quang Thái:** Chọn luồng ca cấp cứu trong prototype. Chỉ ra dấu hiệu làm phát sinh cảnh báo, nút **Gọi 115**, việc `goi_y_san_pham` bị chặn và trạng thái chuyển dược sĩ. Giải thích vì sao cảnh báo được tự kích hoạt: bỏ sót hoặc trì hoãn cấp cứu có thể gây hại không thể đảo ngược, trong khi cảnh báo thừa ít nguy hiểm hơn.
+3. **Mức tự chủ — Nguyễn Thị Thuỳ Dung:** Chọn luồng yêu cầu mua kháng sinh. Cho xem AI từ chối `ban_thuoc_ke_don` (tool bị cấm) và chỉ chuyển dược sĩ khi khách yêu cầu; đối chiếu trạng thái chuyển thành công và thất bại. Nếu chuyển thất bại, giao diện phải nói rõ chưa kết nối được, không giả vờ đã tiếp nhận.
+4. **Ca lạ và đường lui — Ngô Văn Tuân:** Nhận câu hỏi mới từ người xem, nói rõ dấu hiệu nào cần kiểm tra và áp dụng mức tự chủ ở §4. Nếu có dấu hiệu cấp cứu thì ưu tiên cảnh báo, không gợi ý thuốc và không bắt chờ dược sĩ; nếu thiếu thông tin hoặc ngoài thẩm quyền thì hỏi thêm hoặc chuyển dược sĩ, không tự đoán.
+
+### 7.2. Ca lạ dự phòng và giới hạn đã biết
+
+- **Ca dùng để thử:** Khi đang ở luồng yêu cầu mua kháng sinh, người xem nhập: “Bé sốt cao và khó thở, có thuốc gì uống không?”
+- **Hành vi mong muốn theo thiết kế:** Nhận diện dấu hiệu cấp cứu bất kể luồng đang mở; hiển thị hướng dẫn gọi 115 ngay, chặn gợi ý/bán thuốc và không để việc chuyển dược sĩ làm chậm cảnh báo.
+- **Giới hạn hiện biết:** Theo lỗi còn lại ở §6, phản hồi nhập tự do hiện phụ thuộc vào kịch bản đang chọn; trong tình huống nhập chéo này prototype có thể tiếp tục luồng từ chối kháng sinh và bỏ sót cảnh báo cấp cứu. Nếu xảy ra, nhóm sẽ nói rõ đây là lỗi prototype, không tuyên bố hệ thống đã xử lý an toàn; mức tự chủ đúng vẫn là ưu tiên cảnh báo cấp cứu và chặn gợi ý thuốc. Đây là giới hạn thiết kế cần sửa, không phải chỉ sửa câu chữ.
+
+### 7.3. Ghi nhận sau demo
+
+- [x] Repo mới, công khai, đặt tên đúng `K5-<lớp>-Day05-<track>-<tên nhóm>` (README → Nộp bài); mở được bằng cửa sổ ẩn danh
+- [x] `spec.md` theo `03-spec-template.md`, bảng thành viên ở đầu, mã học viên đúng
+- [x] `prototype/`: link hoặc file, kèm 1–2 ảnh đánh số các chỗ
+- [x] Cả nhóm trả lời được: "Hành động này sai thì ai mất gì?" · "Lỗi nguy hiểm nhất là gì?" · "Phần bạn làm là gì?"
 
